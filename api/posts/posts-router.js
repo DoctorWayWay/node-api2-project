@@ -39,5 +39,24 @@ router.get("/:id", async (req, res) => {
   }
 })
 
+// [POST] /api/posts (posts a new post)
+router.post("/", async (req, res) => {
+  try {
+    if (!req.body.title || !req.body.contents) {
+      res.status(400).json({
+        "message": "Please provide title and contents for the post"
+      })
+    } else {
+      const insertedPost = await Posts.insert(req.body)
+      const newPost = await Posts.findById(insertedPost.id)
+      res.status(201).json(newPost)
+    }
+  } catch (err) {
+    res.status(500).json({
+      "message": "There was an error while saving the post to the database"
+    })
+  }
+})
+
 // ===== POST-ROUTER EXPORT =====
 module.exports = router
