@@ -58,5 +58,32 @@ router.post("/", async (req, res) => {
   }
 })
 
+// [PUT] /api/posts/:id (updates a post by id)
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params
+    const { title, contents } = req.body
+    const postToBeUpdated = await Posts.findById(id)
+    if (!postToBeUpdated) {
+      res.status(404).json({
+        "message": "The post with the specified ID does not exist"
+      })
+    } else if (!title || !contents) {
+      res.status(400).json({
+        "message": "Please provide title and contents for the post"
+      })
+    } else {
+      await Posts.update(id, req.body)
+      const updatedPost = await Posts.findById(id)
+      res.status(200).json(updatedPost)
+    }
+  } catch (err) {
+    res.status(500).json({
+      "message": "The post information could not be modified"
+    })
+  }
+})
+
+
 // ===== POST-ROUTER EXPORT =====
 module.exports = router
